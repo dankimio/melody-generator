@@ -14,7 +14,7 @@ def generate_placeholder_melody(parameters):
     # Use parameters (simplified for placeholder)
     tempo = parameters.get('tempo', 120)
     duration_seconds = parameters.get('length', 15)
-    output_dir = parameters.get('output_dir', 'static')
+    output_dir = parameters.get('output_dir', 'output')
     # Key parameter is complex to implement simply, ignoring for placeholder
     # Genre/Mood/Preferences ignored for placeholder
 
@@ -64,8 +64,8 @@ def main():
                       help='Tempo in BPM (default: 120)')
     parser.add_argument('--length', type=int, default=15,
                       help='Duration in seconds (default: 15)')
-    parser.add_argument('--output-dir', type=str, default='static',
-                      help='Output directory for MIDI file (default: static)')
+    parser.add_argument('--output-dir', type=str, default='output',
+                      help='Output directory for MIDI file (default: output)')
     parser.add_argument('--output-file', type=str,
                       help='Output filename (default: melody_TIMESTAMP.mid)')
 
