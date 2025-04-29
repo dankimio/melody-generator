@@ -1,6 +1,7 @@
 import pretty_midi
 import os
 import time
+import argparse
 
 def generate_placeholder_melody(parameters):
     """Generates a simple placeholder MIDI file based on parameters."""
@@ -14,6 +15,7 @@ def generate_placeholder_melody(parameters):
         # Use parameters (simplified for placeholder)
         tempo = parameters.get('tempo', 120)
         duration_seconds = parameters.get('length', 15)
+        output_dir = parameters.get('output_dir', 'static')
         # Key parameter is complex to implement simply, ignoring for placeholder
         # Genre/Mood/Preferences ignored for placeholder
 
@@ -38,21 +40,50 @@ def generate_placeholder_melody(parameters):
         # Add the instrument to the PrettyMIDI object
         midi_data.instruments.append(instrument)
 
-        # Define path to save the MIDI file
-        static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
-        if not os.path.exists(static_dir):
-            os.makedirs(static_dir)
-        
-        timestamp = int(time.time())
-        filename = f"melody_{timestamp}.mid"
-        filepath = os.path.join(static_dir, filename)
-        
+        # Create output directory if it doesn't exist
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        # Generate filename
+        if parameters.get('output_file'):
+            filename = parameters['output_file']
+        else:
+            timestamp = int(time.time())
+            filename = f"melody_{timestamp}.mid"
+
+        filepath = os.path.join(output_dir, filename)
+
         # Write out the MIDI data
         midi_data.write(filepath)
+        print(f"Generated MIDI file: {filepath}")
 
-        # Return the relative path for web access
-        return f"/static/{filename}"
+        return filepath
 
     except Exception as e:
         print(f"Error generating placeholder MIDI: {e}")
         raise
+
+def main():
+    parser = argparse.ArgumentParser(description='Generate a simple MIDI melody.')
+    parser.add_argument('--tempo', type=int, default=120,
+                      help='Tempo in BPM (default: 120)')
+    parser.add_argument('--length', type=int, default=15,
+                      help='Duration in seconds (default: 15)')
+    parser.add_argument('--output-dir', type=str, default='static',
+                      help='Output directory for MIDI file (default: static)')
+    parser.add_argument('--output-file', type=str,
+                      help='Output filename (default: melody_TIMESTAMP.mid)')
+
+    args = parser.parse_args()
+
+    parameters = {
+        'tempo': args.tempo,
+        'length': args.length,
+        'output_dir': args.output_dir,
+        'output_file': args.output_file
+    }
+
+    generate_placeholder_melody(parameters)
+
+if __name__ == '__main__':
+    main()
