@@ -2,13 +2,14 @@ import pretty_midi
 import os
 import time
 import argparse
+import random
 
 # Default parameters for melody generation
 DEFAULT_TEMPO = 120  # Default tempo in BPM (beats per minute)
 DEFAULT_DURATION = 15  # Default duration of the melody in seconds
 DEFAULT_OUTPUT_DIR = 'output'  # Default directory for output MIDI files
 DEFAULT_VELOCITY = 100  # Default note velocity (loudness) in MIDI (0-127)
-NOTE_OVERLAP_RATIO = 0.9  # Ratio to prevent note overlap (0.9 means notes are 90% of their full duration)
+NOTE_OVERLAP_RATIO = 0.0  # No overlap between notes
 
 # MIDI note numbers for C major scale (C4 to C5)
 C_MAJOR_SCALE = [60, 62, 64, 65, 67, 69, 71, 72]  # C4, D4, E4, F4, G4, A4, B4, C5
@@ -20,24 +21,52 @@ def create_midi_instrument():
     instrument = pretty_midi.Instrument(program=instrument_program)
     return midi_data, instrument
 
+def get_next_note(current_note, scale):
+    """Get the next note in the scale with some randomness."""
+    current_index = scale.index(current_note)
+
+    # 70% chance to move by step, 30% chance to leap
+    if random.random() < 0.7:
+        # Move by step (up or down)
+        direction = random.choice([-1, 1])
+        next_index = current_index + direction
+    else:
+        # Leap (up to 3 steps)
+        leap_size = random.randint(2, 3)
+        direction = random.choice([-1, 1])
+        next_index = current_index + (leap_size * direction)
+
+    # Ensure we stay within the scale
+    next_index = max(0, min(len(scale) - 1, next_index))
+    return scale[next_index]
+
 def generate_notes(instrument, tempo, duration_seconds):
     """Generates notes for the melody and adds them to the instrument."""
     note_duration = 60.0 / tempo  # Duration of a quarter note in seconds
     start_time = 0.0
 
-    num_notes = int(duration_seconds / note_duration)
-    for i in range(num_notes):
-        note_number = C_MAJOR_SCALE[i % len(C_MAJOR_SCALE)]
+    # Start with a random note from the scale
+    current_note = random.choice(C_MAJOR_SCALE)
+
+    while start_time < duration_seconds:
+        # Add some variation to note duration
+        duration = note_duration * random.choice([0.5, 1.0, 1.5])  # Half, quarter, or dotted quarter note
+
+        # Add some variation to velocity
+        velocity = random.randint(DEFAULT_VELOCITY - 20, DEFAULT_VELOCITY + 20)
+        velocity = max(40, min(127, velocity))  # Keep within MIDI range
+
         note = pretty_midi.Note(
-            velocity=DEFAULT_VELOCITY,
-            pitch=note_number,
+            velocity=velocity,
+            pitch=current_note,
             start=start_time,
-            end=start_time + note_duration * NOTE_OVERLAP_RATIO
+            end=start_time + duration
         )
         instrument.notes.append(note)
-        start_time += note_duration
-        if start_time >= duration_seconds:
-            break
+
+        # Move to next note
+        current_note = get_next_note(current_note, C_MAJOR_SCALE)
+        start_time += duration
 
 def save_midi_file(midi_data, parameters):
     """Saves the MIDI file to the specified location."""
