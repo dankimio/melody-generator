@@ -4,16 +4,16 @@ A simple command-line tool for generating MIDI melodies using Python. This tool 
 
 ## Features
 
-- Generate MIDI melodies with customizable parameters
-- Adjustable tempo and duration
-- Custom output directory and filename support
-- Simple C major scale-based melody generation
-- Uses the PrettyMIDI library for MIDI file generation
+- [ ] Generate MIDI melodies with customizable parameters
+- [ ] Adjustable tempo and duration
+- [ ] Custom output directory and filename support
+- [ ] Simple C major scale-based melody generation
+- [ ] Uses the PrettyMIDI library for MIDI file generation
 
 ## Requirements
 
-- Python 3.x
-- pretty_midi library
+- [ ] Python 3.x
+- [ ] pip (Python package installer)
 
 ## Installation
 
@@ -27,7 +27,7 @@ cd melody_generator
 2. Install the required dependencies:
 
 ```bash
-pip install pretty_midi
+pip install -r requirements.txt
 ```
 
 ## Usage
@@ -40,10 +40,10 @@ python melody_generator.py [options]
 
 ### Command Line Options
 
-- `--tempo`: Set the tempo in BPM (default: 120)
-- `--length`: Set the duration in seconds (default: 15)
-- `--output-dir`: Specify the output directory (default: 'static')
-- `--output-file`: Specify a custom output filename (optional)
+- [ ] `--tempo`: Set the tempo in BPM (default: 120)
+- [ ] `--length`: Set the duration in seconds (default: 15)
+- [ ] `--output-dir`: Specify the output directory (default: 'static')
+- [ ] `--output-file`: Specify a custom output filename (optional)
 
 ### Examples
 
@@ -85,16 +85,8 @@ The script generates a MIDI file in the specified output directory. If no output
 
 ## Future Improvements
 
-- Add support for different musical scales and keys
-- Implement more complex melody patterns
-- Add support for multiple instruments
-- Include rhythm variations
-- Add support for different musical styles
-
-## License
-
-[Add your license information here]
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+- [ ] Add support for different musical scales and keys
+- [ ] Implement more complex melody patterns
+- [ ] Add support for multiple instruments
+- [ ] Include rhythm variations
+- [ ] Add support for different musical styles
