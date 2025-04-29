@@ -1,1 +1,2 @@
 pretty_midi==0.2.10
+setuptools>=80.0.0
