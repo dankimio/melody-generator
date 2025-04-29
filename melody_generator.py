@@ -13,26 +13,18 @@ NOTE_OVERLAP_RATIO = 0.9  # Ratio to prevent note overlap (0.9 means notes are 9
 # MIDI note numbers for C major scale (C4 to C5)
 C_MAJOR_SCALE = [60, 62, 64, 65, 67, 69, 71, 72]  # C4, D4, E4, F4, G4, A4, B4, C5
 
-def generate_placeholder_melody(parameters):
-    """Generates a simple placeholder MIDI file based on parameters."""
-    # Create a PrettyMIDI object
+def create_midi_instrument():
+    """Creates and returns a MIDI instrument (cello) and PrettyMIDI object."""
     midi_data = pretty_midi.PrettyMIDI()
-    # Create an Instrument instance for a cello instrument
     instrument_program = pretty_midi.instrument_name_to_program('Cello')
     instrument = pretty_midi.Instrument(program=instrument_program)
+    return midi_data, instrument
 
-    # Use parameters (simplified for placeholder)
-    tempo = parameters.get('tempo', DEFAULT_TEMPO)
-    duration_seconds = parameters.get('length', DEFAULT_DURATION)
-    output_dir = parameters.get('output_dir', DEFAULT_OUTPUT_DIR)
-    # Key parameter is complex to implement simply, ignoring for placeholder
-    # Genre/Mood/Preferences ignored for placeholder
-
-    # Calculate note duration based on tempo
-    note_duration = 60.0 / tempo # Duration of a quarter note in seconds
+def generate_notes(instrument, tempo, duration_seconds):
+    """Generates notes for the melody and adds them to the instrument."""
+    note_duration = 60.0 / tempo  # Duration of a quarter note in seconds
     start_time = 0.0
 
-    # Add notes
     num_notes = int(duration_seconds / note_duration)
     for i in range(num_notes):
         note_number = C_MAJOR_SCALE[i % len(C_MAJOR_SCALE)]
@@ -47,14 +39,13 @@ def generate_placeholder_melody(parameters):
         if start_time >= duration_seconds:
             break
 
-    # Add the instrument to the PrettyMIDI object
-    midi_data.instruments.append(instrument)
+def save_midi_file(midi_data, parameters):
+    """Saves the MIDI file to the specified location."""
+    output_dir = parameters.get('output_dir', DEFAULT_OUTPUT_DIR)
 
-    # Create output directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # Generate filename
     if parameters.get('output_file'):
         filename = parameters['output_file']
     else:
@@ -62,12 +53,27 @@ def generate_placeholder_melody(parameters):
         filename = f"melody_{timestamp}.mid"
 
     filepath = os.path.join(output_dir, filename)
-
-    # Write out the MIDI data
     midi_data.write(filepath)
     print(f"Generated MIDI file: {filepath}")
-
     return filepath
+
+def generate_placeholder_melody(parameters):
+    """Generates a simple placeholder MIDI file based on parameters."""
+    # Create MIDI instrument
+    midi_data, instrument = create_midi_instrument()
+
+    # Get parameters
+    tempo = parameters.get('tempo', DEFAULT_TEMPO)
+    duration_seconds = parameters.get('length', DEFAULT_DURATION)
+
+    # Generate notes
+    generate_notes(instrument, tempo, duration_seconds)
+
+    # Add instrument to MIDI data
+    midi_data.instruments.append(instrument)
+
+    # Save the file
+    return save_midi_file(midi_data, parameters)
 
 def main():
     parser = argparse.ArgumentParser(description='Generate a simple MIDI melody.')
