@@ -3,6 +3,16 @@ import os
 import time
 import argparse
 
+# Default parameters for melody generation
+DEFAULT_TEMPO = 120  # Default tempo in BPM (beats per minute)
+DEFAULT_DURATION = 15  # Default duration of the melody in seconds
+DEFAULT_OUTPUT_DIR = 'output'  # Default directory for output MIDI files
+DEFAULT_VELOCITY = 100  # Default note velocity (loudness) in MIDI (0-127)
+NOTE_OVERLAP_RATIO = 0.9  # Ratio to prevent note overlap (0.9 means notes are 90% of their full duration)
+
+# MIDI note numbers for C major scale (C4 to C5)
+C_MAJOR_SCALE = [60, 62, 64, 65, 67, 69, 71, 72]  # C4, D4, E4, F4, G4, A4, B4, C5
+
 def generate_placeholder_melody(parameters):
     """Generates a simple placeholder MIDI file based on parameters."""
     # Create a PrettyMIDI object
@@ -12,24 +22,25 @@ def generate_placeholder_melody(parameters):
     instrument = pretty_midi.Instrument(program=instrument_program)
 
     # Use parameters (simplified for placeholder)
-    tempo = parameters.get('tempo', 120)
-    duration_seconds = parameters.get('length', 15)
-    output_dir = parameters.get('output_dir', 'output')
+    tempo = parameters.get('tempo', DEFAULT_TEMPO)
+    duration_seconds = parameters.get('length', DEFAULT_DURATION)
+    output_dir = parameters.get('output_dir', DEFAULT_OUTPUT_DIR)
     # Key parameter is complex to implement simply, ignoring for placeholder
     # Genre/Mood/Preferences ignored for placeholder
 
     # Calculate note duration based on tempo
-    # Let's create a simple C major scale pattern
-    notes = [60, 62, 64, 65, 67, 69, 71, 72] # C4 to C5
     note_duration = 60.0 / tempo # Duration of a quarter note in seconds
     start_time = 0.0
 
     # Add notes
     num_notes = int(duration_seconds / note_duration)
     for i in range(num_notes):
-        note_number = notes[i % len(notes)]
+        note_number = C_MAJOR_SCALE[i % len(C_MAJOR_SCALE)]
         note = pretty_midi.Note(
-            velocity=100, pitch=note_number, start=start_time, end=start_time + note_duration * 0.9 # Slightly shorter to avoid overlap
+            velocity=DEFAULT_VELOCITY,
+            pitch=note_number,
+            start=start_time,
+            end=start_time + note_duration * NOTE_OVERLAP_RATIO
         )
         instrument.notes.append(note)
         start_time += note_duration
@@ -60,12 +71,12 @@ def generate_placeholder_melody(parameters):
 
 def main():
     parser = argparse.ArgumentParser(description='Generate a simple MIDI melody.')
-    parser.add_argument('--tempo', type=int, default=120,
-                      help='Tempo in BPM (default: 120)')
-    parser.add_argument('--length', type=int, default=15,
-                      help='Duration in seconds (default: 15)')
-    parser.add_argument('--output-dir', type=str, default='output',
-                      help='Output directory for MIDI file (default: output)')
+    parser.add_argument('--tempo', type=int, default=DEFAULT_TEMPO,
+                      help=f'Tempo in BPM (default: {DEFAULT_TEMPO})')
+    parser.add_argument('--length', type=int, default=DEFAULT_DURATION,
+                      help=f'Duration in seconds (default: {DEFAULT_DURATION})')
+    parser.add_argument('--output-dir', type=str, default=DEFAULT_OUTPUT_DIR,
+                      help=f'Output directory for MIDI file (default: {DEFAULT_OUTPUT_DIR})')
     parser.add_argument('--output-file', type=str,
                       help='Output filename (default: melody_TIMESTAMP.mid)')
 
